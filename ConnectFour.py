@@ -129,6 +129,7 @@ turn = 0
 
 pygame.init()
 
+# important dimensions for the screen and animations
 SQUARESIZE = 100
 width = MAXCOL * SQUARESIZE
 height = (MAXROWS + 1) * SQUARESIZE
@@ -150,7 +151,7 @@ while not gameOver:
             sys.exit()
 
         if event.type == pygame.MOUSEMOTION:
-            pygame.draw.rect(screen, BLACK, (0,0, width, SQUARESIZE))
+            pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
             posx = event.pos[0]
             if turn % 2 == 0:
                 pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE/2)), RADIUS)
