@@ -8,6 +8,8 @@ import numpy as np
 MAXROWS = 6
 MAXCOL = 7
 
+BLUE = (0, 0, 255)
+BLACK = (0, 0, 0)
 
 def createBoard():
     board = np.zeros((MAXROWS, MAXCOL))
@@ -104,25 +106,52 @@ def checkDiagonalFourInARow(board, row, column) -> bool:
     return win
 
 
+def drawBoard(board):
+    for c in range(MAXCOL):
+        for r in range(MAXROWS):
+            pygame.draw.rect(screen, BLUE, (c*SQUARESIZE, r*SQUARESIZE+SQUARESIZE, SQUARESIZE, SQUARESIZE))
+            pygame.draw.circle(screen, BLACK, (int(c*SQUARESIZE+SQUARESIZE/2), int(r*SQUARESIZE+SQUARESIZE+SQUARESIZE/2)), RADIUS)
+
 board = createBoard()
 gameOver = False
 turn = 0
+
+pygame.init()
+
+SQUARESIZE = 100
+width = MAXCOL * SQUARESIZE
+height = (MAXROWS + 1) * SQUARESIZE
+
+size = (width, height)
+
+RADIUS = int(SQUARESIZE / 2 - 5)
+
+screen = pygame.display.set_mode(size)
+drawBoard(board)
+pygame.display.update()
+
 while not gameOver:
-    if turn % 2 == 0:
-        column = int(input("Player 1: Make your Selection (0-6):"))
-        if isValidLoc(column, board):
-            row = getNextOpenRow(column, board)
-            dropPiece(board, row, column, 1)
-            if checkForConnectFour(board):
-                gameOver = True
-                print("Player 1 Wins")
-    else:
-        column = int(input("Player 2: Make your selection (0-6):"))
-        if isValidLoc(column, board):
-            row = getNextOpenRow(column, board)
-            dropPiece(board, row, column, 2)
-            if checkForConnectFour(board):
-                gameOver = True
-                print("Player 2 Wins")
-    turn += 1
-    printBoard(board)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            continue
+            # if turn % 2 == 0:
+            #     column = int(input("Player 1: Make your Selection (0-6):"))
+            #     if isValidLoc(column, board):
+            #         row = getNextOpenRow(column, board)
+            #         dropPiece(board, row, column, 1)
+            #         if checkForConnectFour(board):
+            #             gameOver = True
+            #             print("Player 1 Wins")
+            # else:
+            #     column = int(input("Player 2: Make your selection (0-6):"))
+            #     if isValidLoc(column, board):
+            #         row = getNextOpenRow(column, board)
+            #         dropPiece(board, row, column, 2)
+            #         if checkForConnectFour(board):
+            #             gameOver = True
+            #             print("Player 2 Wins")
+            # turn += 1
+            # printBoard(board)
