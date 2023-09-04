@@ -21,7 +21,7 @@ def isValidLoc(column, board):
 
 def getNextOpenRow(column, board):
     for r in range(MAXROWS):
-        if isValidLoc(column, board):
+        if board[r][column] == 0:
             return r
 
 def printBoard(board):
@@ -42,4 +42,3 @@ while not gameOver:
             dropPiece(board, row, column, 2)
     turn += 1
     printBoard(board)
-
