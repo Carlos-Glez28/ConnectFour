@@ -8,6 +8,10 @@ import numpy as np
 MAXROWS = 6
 MAXCOL = 7
 
+BLUE = (0, 0, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+YELLOW = (255, 255, 0)
 
 def createBoard():
     board = np.zeros((MAXROWS, MAXCOL))
@@ -104,25 +108,82 @@ def checkDiagonalFourInARow(board, row, column) -> bool:
     return win
 
 
+def drawBoard(board):
+    # Creates board and creates black circles
+    for c in range(MAXCOL):
+        for r in range(MAXROWS):
+            pygame.draw.rect(screen, BLUE, (c*SQUARESIZE, r*SQUARESIZE+SQUARESIZE, SQUARESIZE, SQUARESIZE))
+            pygame.draw.circle(screen, BLACK, (int(c*SQUARESIZE+SQUARESIZE/2), int(r*SQUARESIZE+SQUARESIZE+SQUARESIZE/2)), RADIUS)
+    #Creates Animation for user input
+    for c in range(MAXCOL):
+        for r in range(MAXROWS):
+            if board[r][c] == 1:
+                pygame.draw.circle(screen, RED, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
+            elif board[r][c] == 2:
+                pygame.draw.circle(screen, YELLOW, (int(c*SQUARESIZE+SQUARESIZE/2), height-int(r*SQUARESIZE+SQUARESIZE/2)), RADIUS)
+    pygame.display.update()
+
 board = createBoard()
 gameOver = False
 turn = 0
+
+pygame.init()
+
+# important dimensions for the screen and animations
+SQUARESIZE = 100
+width = MAXCOL * SQUARESIZE
+height = (MAXROWS + 1) * SQUARESIZE
+
+size = (width, height)
+
+RADIUS = int(SQUARESIZE / 2 - 5)
+
+screen = pygame.display.set_mode(size)
+drawBoard(board)
+pygame.display.update()
+
+font = pygame.font.SysFont("monospace", 75)
+
 while not gameOver:
-    if turn % 2 == 0:
-        column = int(input("Player 1: Make your Selection (0-6):"))
-        if isValidLoc(column, board):
-            row = getNextOpenRow(column, board)
-            dropPiece(board, row, column, 1)
-            if checkForConnectFour(board):
-                gameOver = True
-                print("Player 1 Wins")
-    else:
-        column = int(input("Player 2: Make your selection (0-6):"))
-        if isValidLoc(column, board):
-            row = getNextOpenRow(column, board)
-            dropPiece(board, row, column, 2)
-            if checkForConnectFour(board):
-                gameOver = True
-                print("Player 2 Wins")
-    turn += 1
-    printBoard(board)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            sys.exit()
+
+        if event.type == pygame.MOUSEMOTION:
+            pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
+            posx = event.pos[0]
+            if turn % 2 == 0:
+                pygame.draw.circle(screen, RED, (posx, int(SQUARESIZE/2)), RADIUS)
+            else:
+                pygame.draw.circle(screen, YELLOW, (posx, int(SQUARESIZE/2)), RADIUS)
+        pygame.display.update()
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pygame.draw.rect(screen, BLACK, (0, 0, width, SQUARESIZE))
+            if turn % 2 == 0:
+                posx = event.pos[0]
+                column = int(math.floor(posx / SQUARESIZE))
+                if isValidLoc(column, board):
+                    row = getNextOpenRow(column, board)
+                    dropPiece(board, row, column, 1)
+                    if checkForConnectFour(board):
+                        gameOver = True
+                        label = font.render("Player 1 Wins", 1, RED)
+                        screen.blit(label, (40, 10))
+            else:
+                posx = event.pos[0]
+                column = int(math.floor(posx / SQUARESIZE))
+                if isValidLoc(column, board):
+                    row = getNextOpenRow(column, board)
+                    dropPiece(board, row, column, 2)
+                    if checkForConnectFour(board):
+                        gameOver = True
+                        label = font.render("Player 2 Wins", 1, YELLOW)
+                        screen.blit(label, (40, 10))
+            turn += 1
+            printBoard(board)
+            drawBoard(board)
+
+            if gameOver:
+                pygame.time.wait(5000)
